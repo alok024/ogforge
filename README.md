@@ -1,5 +1,7 @@
 # OGForge
 
+[![CI](https://github.com/alok024/ogforge/actions/workflows/ci.yml/badge.svg)](https://github.com/alok024/ogforge/actions/workflows/ci.yml) [![Deploy](https://github.com/alok024/ogforge/actions/workflows/deploy.yml/badge.svg)](https://github.com/alok024/ogforge/actions/workflows/deploy.yml)
+
 Dynamic Open Graph image and meta-tag generator — a developer API plus a small dashboard.
 
 Drop one `<meta property="og:image" content="https://.../api/og?title=...&theme=sky" />`
