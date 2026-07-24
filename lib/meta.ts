@@ -86,28 +86,46 @@ function esc(value: string): string {
     .replace(/>/g, '&gt;');
 }
 
+// Social scrapers require an absolute URL; fall back to a documented placeholder
+// domain so builds with no deploy-time config stay deterministic.
+function resolveBaseUrl(): string {
+  const base = process.env.NEXT_PUBLIC_BASE_URL;
+  return (base && base.trim() ? base.trim() : 'https://ogforge.example').replace(/\/+$/, '');
+}
+
+// Qualify a same-origin path (e.g. the /api/og route) into an absolute https URL.
+// Already-absolute values pass through untouched.
+function toAbsoluteUrl(value: string): string {
+  if (/^https?:\/\//.test(value)) return value;
+  return resolveBaseUrl() + (value.startsWith('/') ? value : '/' + value);
+}
+
 // Emit a full, copy-paste block of Open Graph + Twitter meta tags.
 export function buildMetaTags(input: MetaInput): { tags: string; og_image_url: string } {
   const title = input.title || 'Your title here';
   const description = input.description || 'A short, punchy description of the page.';
-  const url = input.url || 'https://example.com';
+  const url = input.url || resolveBaseUrl();
   // If a fully-qualified image is supplied, honor it; otherwise generate one.
   const generated = ogImageUrl(input);
   const image = input.image && /^https?:\/\//.test(input.image) ? input.image : generated;
+  // og:image / twitter:image must be absolute for external scrapers, regardless of
+  // whether `image` came from the caller or was generated as a relative /api/og path.
+  const absoluteImage = toAbsoluteUrl(image);
 
   const lines = [
     `<meta property="og:type" content="website" />`,
     `<meta property="og:title" content="${esc(title)}" />`,
     `<meta property="og:description" content="${esc(description)}" />`,
     `<meta property="og:url" content="${esc(url)}" />`,
-    `<meta property="og:image" content="${esc(image)}" />`,
+    `<meta property="og:image" content="${esc(absoluteImage)}" />`,
     `<meta property="og:image:width" content="1200" />`,
     `<meta property="og:image:height" content="630" />`,
     `<meta name="twitter:card" content="summary_large_image" />`,
     `<meta name="twitter:title" content="${esc(title)}" />`,
     `<meta name="twitter:description" content="${esc(description)}" />`,
-    `<meta name="twitter:image" content="${esc(image)}" />`,
+    `<meta name="twitter:image" content="${esc(absoluteImage)}" />`,
   ];
 
+  // og_image_url stays same-origin-relative: it's consumed by the in-app live preview.
   return { tags: lines.join('\n'), og_image_url: generated };
 }

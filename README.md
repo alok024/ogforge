@@ -1,5 +1,10 @@
 # OGForge
 
+> **Archived — no longer actively developed.** OGForge's core capability, `next/og`
+> image rendering, ships free and built into the buyer's own framework (Next.js), so
+> there is no defensible paid wedge. The `og:image` / meta-tag output below is still
+> correct and usable.
+
 [![CI](https://github.com/alok024/ogforge/actions/workflows/ci.yml/badge.svg)](https://github.com/alok024/ogforge/actions/workflows/ci.yml) [![Deploy](https://github.com/alok024/ogforge/actions/workflows/deploy.yml/badge.svg)](https://github.com/alok024/ogforge/actions/workflows/deploy.yml)
 
 Dynamic Open Graph image and meta-tag generator — a developer API plus a small dashboard.
