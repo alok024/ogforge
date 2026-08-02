@@ -10,7 +10,6 @@ interface ThemeStyle {
   accent: string;
 }
 
-// next/og supports a subset of CSS; keep gradients + colors simple.
 const THEMES: Record<string, ThemeStyle> = {
   sky: {
     bg: 'linear-gradient(135deg, #0ea5e9 0%, #6366f1 100%)',

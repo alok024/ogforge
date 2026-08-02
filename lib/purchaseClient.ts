@@ -1,9 +1,5 @@
 'use client';
 
-// Browser-side checkout. Runs the mock branch locally (no keys, no charge) and
-// the real Razorpay-modal branch when live keys are configured. Both branches
-// finish by POSTing to /api/checkout/verify and returning the unlock result.
-
 export interface PurchaseResult {
   ok: boolean;
   testMode: boolean;
@@ -63,7 +59,6 @@ export async function purchase(planId: string): Promise<PurchaseResult> {
   const order: OrderResponse = await orderRes.json();
   if (order.error) return { ok: false, testMode: false, planId, error: order.error };
 
-  // Local / mock mode: the server already produced a valid mock payment.
   if (order.mock_payment) {
     const ok = await verify(
       order.order_id,
@@ -73,7 +68,6 @@ export async function purchase(planId: string): Promise<PurchaseResult> {
     return { ok, testMode: true, planId };
   }
 
-  // Real mode: open the Razorpay modal and verify the returned signature.
   await loadRazorpay();
   return new Promise<PurchaseResult>((resolve) => {
     const rzp = new window.Razorpay!({

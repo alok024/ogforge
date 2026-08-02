@@ -39,7 +39,6 @@ export default function Home() {
     [title, description, theme],
   );
 
-  // Regenerate the meta block from the server whenever inputs change (debounced).
   useEffect(() => {
     const t = setTimeout(async () => {
       const res = await fetch('/api/meta', {

@@ -1,6 +1,3 @@
-// Pure, deterministic meta-tag builder. No I/O, no keys — the OG image URL it
-// emits is served by app/api/og (Next's built-in next/og), so the whole product
-// runs locally with zero credentials.
 
 export interface MetaInput {
   title?: string;
@@ -13,7 +10,7 @@ export interface MetaInput {
 export interface ThemeMeta {
   id: string;
   label: string;
-  swatch: string; // representative color for the gallery chip
+  swatch: string;
 }
 
 export interface TemplateMeta {
@@ -40,7 +37,6 @@ export function isTheme(theme: string | undefined): boolean {
   return !!theme && THEMES.some((t) => t.id === theme);
 }
 
-// Sample cards for the landing "templates" gallery.
 export function listTemplates(): TemplateMeta[] {
   return [
     {
@@ -67,8 +63,6 @@ export function listTemplates(): TemplateMeta[] {
   ];
 }
 
-// Build the /api/og URL for a given card. Kept in one place so the preview <img>
-// and the emitted <meta> tags always agree.
 export function ogImageUrl(input: MetaInput): string {
   const theme = isTheme(input.theme) ? (input.theme as string) : DEFAULT_THEME;
   const params = new URLSearchParams();
@@ -86,30 +80,22 @@ function esc(value: string): string {
     .replace(/>/g, '&gt;');
 }
 
-// Social scrapers require an absolute URL; fall back to a documented placeholder
-// domain so builds with no deploy-time config stay deterministic.
 function resolveBaseUrl(): string {
   const base = process.env.NEXT_PUBLIC_BASE_URL;
   return (base && base.trim() ? base.trim() : 'https://ogforge.example').replace(/\/+$/, '');
 }
 
-// Qualify a same-origin path (e.g. the /api/og route) into an absolute https URL.
-// Already-absolute values pass through untouched.
 function toAbsoluteUrl(value: string): string {
   if (/^https?:\/\//.test(value)) return value;
   return resolveBaseUrl() + (value.startsWith('/') ? value : '/' + value);
 }
 
-// Emit a full, copy-paste block of Open Graph + Twitter meta tags.
 export function buildMetaTags(input: MetaInput): { tags: string; og_image_url: string } {
   const title = input.title || 'Your title here';
   const description = input.description || 'A short, punchy description of the page.';
   const url = input.url || resolveBaseUrl();
-  // If a fully-qualified image is supplied, honor it; otherwise generate one.
   const generated = ogImageUrl(input);
   const image = input.image && /^https?:\/\//.test(input.image) ? input.image : generated;
-  // og:image / twitter:image must be absolute for external scrapers, regardless of
-  // whether `image` came from the caller or was generated as a relative /api/og path.
   const absoluteImage = toAbsoluteUrl(image);
 
   const lines = [
@@ -126,6 +112,5 @@ export function buildMetaTags(input: MetaInput): { tags: string; og_image_url: s
     `<meta name="twitter:image" content="${esc(absoluteImage)}" />`,
   ];
 
-  // og_image_url stays same-origin-relative: it's consumed by the in-app live preview.
   return { tags: lines.join('\n'), og_image_url: generated };
 }

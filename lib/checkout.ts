@@ -8,7 +8,7 @@ import {
 export type PlanKind = 'free' | 'sub' | 'one-time';
 
 export interface Plan {
-  amount: number; // smallest currency unit (cents)
+  amount: number;
   currency: string;
   label: string;
   kind: PlanKind;
@@ -56,8 +56,6 @@ export async function createCheckoutOrder(planId: string): Promise<CheckoutOrder
   };
 
   if (order.mock) {
-    // Precompute the payment the browser would otherwise get from the Razorpay
-    // modal, so the local flow can complete order -> verify -> unlock with no keys.
     const payment_id = 'pay_mock_' + order.order_id.slice(-8);
     const signature = mockSignature(order.order_id, payment_id);
     base.mock_payment = { payment_id, signature };
