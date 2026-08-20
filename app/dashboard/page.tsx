@@ -3,9 +3,9 @@
 import { useState } from 'react';
 import { purchase } from '@/lib/purchaseClient';
 
-const DEMO_API_KEY = 'ogf_demo_live_8fJ2xQ9pR4nK';
-const USED = 1240;
-const QUOTA = 5000;
+const SAMPLE_API_KEY = 'ogf_sample_8fJ2xQ9pR4nK';
+const SAMPLE_USED = 1240;
+const SAMPLE_QUOTA = 5000;
 
 export default function Dashboard() {
   const [plan, setPlan] = useState('Pro — $9/mo');
@@ -13,7 +13,7 @@ export default function Dashboard() {
   const [notice, setNotice] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
 
-  const pct = Math.min(100, Math.round((USED / QUOTA) * 100));
+  const pct = Math.min(100, Math.round((SAMPLE_USED / SAMPLE_QUOTA) * 100));
 
   async function upgrade() {
     setBuying(true);
@@ -37,7 +37,7 @@ export default function Dashboard() {
 
   async function copyKey() {
     try {
-      await navigator.clipboard.writeText(DEMO_API_KEY);
+      await navigator.clipboard.writeText(SAMPLE_API_KEY);
       setCopied(true);
       setTimeout(() => setCopied(false), 1500);
     } catch {
@@ -58,6 +58,13 @@ export default function Dashboard() {
       <main className="container section">
         <h1>Dashboard</h1>
         <p className="lead">Your API key, usage, and plan.</p>
+        <p>
+          <span className="badge warn">Sample data</span>{' '}
+          <span className="muted" style={{ fontSize: '0.85rem' }}>
+            This page has no backend. The key, usage, and plan below are hardcoded
+            placeholders, not a real account.
+          </span>
+        </p>
 
         {notice && (
           <p>
@@ -67,15 +74,16 @@ export default function Dashboard() {
 
         <div className="grid cols-2">
           <div className="card">
-            <label>API key</label>
+            <label>API key (sample, not live)</label>
             <div className="row" style={{ alignItems: 'center', flex: 'initial' }}>
-              <code style={{ flex: 1, fontSize: '0.95rem', wordBreak: 'break-all' }}>{DEMO_API_KEY}</code>
+              <code style={{ flex: 1, fontSize: '0.95rem', wordBreak: 'break-all' }}>{SAMPLE_API_KEY}</code>
               <button className="btn secondary" onClick={copyKey} style={{ flex: 'initial' }}>
                 {copied ? 'Copied' : 'Copy'}
               </button>
             </div>
             <p className="muted" style={{ fontSize: '0.85rem', marginBottom: 0 }}>
-              Send as <code>Authorization: Bearer ogf_...</code> on every request.
+              Send as <code>Authorization: Bearer ogf_...</code> on every request. This
+              particular key is a placeholder and does not authenticate anything.
             </p>
           </div>
 
@@ -93,8 +101,8 @@ export default function Dashboard() {
 
         <div className="card" style={{ marginTop: 20 }}>
           <div className="row" style={{ alignItems: 'center', flex: 'initial' }}>
-            <label style={{ flex: 1, margin: 0 }}>Usage this month</label>
-            <span className="muted">{USED.toLocaleString()} / {QUOTA.toLocaleString()} calls</span>
+            <label style={{ flex: 1, margin: 0 }}>Usage this month (sample data)</label>
+            <span className="muted">{SAMPLE_USED.toLocaleString()} / {SAMPLE_QUOTA.toLocaleString()} calls</span>
           </div>
           <div
             style={{
@@ -115,7 +123,8 @@ export default function Dashboard() {
             />
           </div>
           <p className="muted" style={{ fontSize: '0.85rem', marginBottom: 0, marginTop: 10 }}>
-            {pct}% of your monthly image quota used. Resets on the 1st.
+            {pct}% of a placeholder monthly quota — there is no metering behind this
+            demo, so the number never changes.
           </p>
         </div>
 
